@@ -39,6 +39,8 @@ dependencies:
   http: ^1.2.2
   video_player: ^2.9.1
   percent_indicator: ^4.2.3
+  get: ^4.6.6
+  logger: ^2.4.0
 
 dev_dependencies:
   flutter_test:

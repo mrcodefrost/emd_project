@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class ProgressBar extends StatelessWidget {
   final double progressValue;
@@ -9,11 +10,12 @@ class ProgressBar extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.only(top: 12.0),
-        child: LinearProgressIndicator(
-          value: progressValue,
-          minHeight: 4,
-          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+        child: LinearPercentIndicator(
+          percent: progressValue,
+          lineHeight: 4,
           backgroundColor: Colors.grey.shade700,
+          progressColor: Colors.white,
+          // animation: true,
         ),
       ),
     );
