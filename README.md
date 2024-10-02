@@ -1,16 +1,43 @@
 # emd_project
 
-A new Flutter project.
+Instagram like stories POC
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+<div style="
+  display: flex;
+  justify-content: space-between;
+  ">
+ <img src = "" width="250"/>
+ <img src = "" width="250"/>
+ <img src = "" width="250"/>
+</div>
 
-A few resources to get you started if this is your first Flutter project:
+### Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Users List:** Browse through the users on homescreen displayed as circle avatars.
+- **Story View:** View stories of a user by tapping on user avatar.
+- **Tap to navigate:** Tap at left or right side of screen to go to previous or next story respectively.
+- **Swipe to switch user:** Swipe left or right to go to previous or next story respectively.
+- **Long press to pause:** Long press to pause a story ( Images will go to next after 10 seconds and videos after their duration).
+- **Edge cases:** Added appropriate responses for varied error scenarious.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+### Installation
+
+1. Clone the repository to your local machine:
+
+ ```bash
+   git clone https://github.com/mrcodefrost/kriminal_fashion_client.git
+ ```
+
+2. Navigate to the project directory:
+
+ ```bash
+   cd kriminal_fashion_client
+ ```
+
+3. Install dependencies by running this command in IDE terminal:
+
+ ```bash
+   flutter pub get
+ ```
