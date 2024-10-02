@@ -1,15 +1,10 @@
 import 'package:emd_project/home/view/screens/home_screen.dart';
 import 'package:emd_project/utils/depedency_injection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 void main() {
   runApp(const MyApp());
-
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
   DependencyInjection.init();
 }
 
@@ -25,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

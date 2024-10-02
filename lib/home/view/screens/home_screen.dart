@@ -16,17 +16,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final homeController = Get.find<HomeController>();
   int currentUserIndex = 0;
 
-  // void openStory(int index) {
-  //   Navigator.push(
-  //       context,
-  //       MaterialPageRoute(
-  //           builder: (context) =>
-  //               StoryView(stories: homeController.data[index].stories!)));
-  // }
-
   void openStory(int index) {
     setState(() {
-      currentUserIndex = index; // Update the current user index
+      currentUserIndex = index;
     });
 
     Navigator.push(
@@ -36,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
           stories: homeController.data[currentUserIndex].stories!,
           onNextUser: goToNextUser,
           onPreviousUser: goToPreviousUser,
+          username: homeController.data[currentUserIndex].userName!,
         ),
       ),
     );
@@ -56,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
             stories: homeController.data[currentUserIndex].stories!,
             onNextUser: goToNextUser,
             onPreviousUser: goToPreviousUser,
+            username: homeController.data[currentUserIndex].userName!,
           ),
         ),
       );
@@ -77,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
             stories: homeController.data[currentUserIndex].stories!,
             onNextUser: goToNextUser,
             onPreviousUser: goToPreviousUser,
+            username: homeController.data[currentUserIndex].userName!,
           ),
         ),
       );

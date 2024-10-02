@@ -4,17 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../model/api_model.dart';
+import '../widgets/image_story.dart';
+import '../widgets/video_story.dart';
 
 class StoryView extends StatefulWidget {
   final List<Stories> stories;
   final Function onNextUser;
   final Function onPreviousUser;
+  final String username;
 
   const StoryView(
       {super.key,
       required this.stories,
       required this.onNextUser,
-      required this.onPreviousUser});
+      required this.onPreviousUser,
+      required this.username});
 
   @override
   State<StoryView> createState() => _StoryViewState();
@@ -39,27 +43,28 @@ class _StoryViewState extends State<StoryView> {
     _disposeVideoController();
     _cancelImageTimer();
 
-    // Check if the current story is a video and initialize the controller
+    // if the current story is a video then initialize the controller
     if (story.mediaType == 'video') {
-      _videoController = VideoPlayerController.network(story.mediaUrl!)
-        ..initialize().then((_) {
-          setState(() {}); // Trigger rebuild once video initializes
-          _videoController?.play(); // Auto-play video
-          _videoController?.setLooping(false); // Play video only once
-          _videoController?.addListener(() {
-            // Check if the video has ended to navigate to the next story
-            if (_videoController!.value.position ==
-                _videoController!.value.duration) {
-              _goToNextStory();
-            }
-          });
-        });
+      _videoController =
+          VideoPlayerController.networkUrl(Uri.parse(story.mediaUrl!))
+            ..initialize().then((_) {
+              setState(() {}); // Trigger rebuild once video initializes
+              _videoController?.play(); // Auto-play video
+              _videoController?.setLooping(false); // Play video only once
+              _videoController?.addListener(() {
+                //  if the video has ended then navigate to the next story
+                if (_videoController!.value.position ==
+                    _videoController!.value.duration) {
+                  _goToNextStory();
+                }
+              });
+            });
     } else if (story.mediaType == 'image') {
       _startImageTimer(); // Start timer for images
     }
   }
 
-  // Start a timer for images to go to the next story automatically after 5 seconds
+  // Timer for images
   void _startImageTimer() {
     _imageTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (!isPaused) {
@@ -74,7 +79,6 @@ class _StoryViewState extends State<StoryView> {
     _imageTimer = null;
   }
 
-  // Dispose video controllers when no longer needed
   void _disposeVideoController() {
     if (_videoController != null) {
       _videoController?.dispose();
@@ -87,41 +91,14 @@ class _StoryViewState extends State<StoryView> {
       if (currentStoryIndex < widget.stories.length - 1) {
         currentStoryIndex++;
       } else {
-        widget.onNextUser(); // Move to the next user's stories
+        widget.onNextUser();
       }
       _disposeVideoController(); // Dispose previous video controller
       _cancelImageTimer();
-      _loadStory(widget.stories[currentStoryIndex]); // Load new story
+      _loadStory(widget.stories[currentStoryIndex]);
     });
   }
 
-  // Navigate to the previous story
-  void _goToPreviousStory() {
-    setState(() {
-      if (currentStoryIndex > 0) {
-        currentStoryIndex--;
-      } else {
-        widget.onPreviousUser(); // Move to the previous user's stories
-      }
-      _disposeVideoController(); // Dispose previous video controller
-      _loadStory(widget.stories[currentStoryIndex]); // Load new story
-    });
-  }
-
-  // // Navigate to the next story
-  // void _goToNextStory() {
-  //   setState(() {
-  //     if (currentStoryIndex < widget.stories.length - 1) {
-  //       currentStoryIndex++;
-  //     } else {
-  //       Navigator.pop(context); // Exit story view if no more stories
-  //     }
-  //     _disposeVideoController(); // Dispose previous video controller
-  //     _loadStory(widget.stories[currentStoryIndex]); // Load new story
-  //   });
-  // }
-
-  // Handle onTapDown to move to next/previous stories within the same user
   void onTapDown(TapDownDetails details) {
     final screenWidth = MediaQuery.of(context).size.width;
     final dx = details.globalPosition.dx;
@@ -139,32 +116,10 @@ class _StoryViewState extends State<StoryView> {
         Navigator.pop(context);
       }
 
-      _disposeVideoController(); // Dispose video controller to prevent memory leaks
-      _loadStory(widget.stories[currentStoryIndex]); // Load new story
+      _disposeVideoController();
+      _loadStory(widget.stories[currentStoryIndex]);
     });
   }
-
-  // void onTapDown(TapDownDetails details) {
-  //   final screenWidth = MediaQuery.of(context).size.width;
-  //   final dx = details.globalPosition.dx;
-  //
-  //   setState(() {
-  //     // If user taps on the left side, navigate to the previous story
-  //     if (dx < screenWidth / 2 && currentStoryIndex > 0) {
-  //       currentStoryIndex--;
-  //     }
-  //     // If user taps on the right side, navigate to the next story
-  //     else if (dx >= screenWidth / 2 &&
-  //         currentStoryIndex < widget.stories.length - 1) {
-  //       currentStoryIndex++;
-  //     } else {
-  //       Navigator.pop(context);
-  //     }
-  //
-  //     _disposeVideoController(); // Dispose video controller to prevent memory leaks
-  //     _loadStory(widget.stories[currentStoryIndex]); // Load new story
-  //   });
-  // }
 
   @override
   void dispose() {
@@ -207,112 +162,25 @@ class _StoryViewState extends State<StoryView> {
       child: Scaffold(
         body: Center(
           child: currentStory.mediaType == 'image'
-              ? ImageStory(currentStory: currentStory)
+              ? ImageStory(
+                  currentStory: currentStory,
+                  username: widget.username,
+                )
               : (_videoController != null &&
                       _videoController!.value.isInitialized)
                   ? VideoStory(
                       videoController: _videoController,
                       currentStory: currentStory,
-                    ) // Display video player
-                  : const CircularProgressIndicator(), // Show a loader while the video initializes
+                      username: widget.username,
+                    )
+                  : const CircularProgressIndicator(), // loader while video is loading
         ),
       ),
     );
   }
 }
 
-class ImageStory extends StatelessWidget {
-  final Stories currentStory;
-
-  const ImageStory({super.key, required this.currentStory});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SizedBox.expand(
-          child: Image.network(
-            currentStory.mediaUrl!,
-            fit: BoxFit.cover, // Make image cover the entire screen
-          ),
-        ),
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-              child: Column(
-                children: [
-                  // Todo : uncomment below to see story ID
-                  Text(
-                    currentStory.storyId.toString() ?? '',
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    currentStory.text ?? '',
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    currentStory.textDescription ?? '',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class VideoStory extends StatelessWidget {
-  final VideoPlayerController? videoController;
-  final Stories currentStory;
-
-  const VideoStory(
-      {super.key, this.videoController, required this.currentStory});
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SizedBox.expand(child: VideoPlayer(videoController!)),
-        SafeArea(
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
-              child: Column(
-                children: [
-                  Text(
-                    currentStory.text ?? '',
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    currentStory.textDescription ?? '',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
+// ==================  Ignore below code ====================
 // List<double> progressValue = [];
 //
 // @override
@@ -394,4 +262,52 @@ class VideoStory extends StatelessWidget {
 //       }
 //     });
 //   }
+// }
+
+// // Navigate to the next story
+// void _goToNextStory() {
+//   setState(() {
+//     if (currentStoryIndex < widget.stories.length - 1) {
+//       currentStoryIndex++;
+//     } else {
+//       Navigator.pop(context); // Exit story view if no more stories
+//     }
+//     _disposeVideoController(); // Dispose previous video controller
+//     _loadStory(widget.stories[currentStoryIndex]); // Load new story
+//   });
+// }
+
+// void onTapDown(TapDownDetails details) {
+//   final screenWidth = MediaQuery.of(context).size.width;
+//   final dx = details.globalPosition.dx;
+//
+//   setState(() {
+//     // If user taps on the left side, navigate to the previous story
+//     if (dx < screenWidth / 2 && currentStoryIndex > 0) {
+//       currentStoryIndex--;
+//     }
+//     // If user taps on the right side, navigate to the next story
+//     else if (dx >= screenWidth / 2 &&
+//         currentStoryIndex < widget.stories.length - 1) {
+//       currentStoryIndex++;
+//     } else {
+//       Navigator.pop(context);
+//     }
+//
+//     _disposeVideoController(); // Dispose video controller to prevent memory leaks
+//     _loadStory(widget.stories[currentStoryIndex]); // Load new story
+//   });
+// }
+
+// // Navigate to the previous story
+// void _goToPreviousStory() {
+//   setState(() {
+//     if (currentStoryIndex > 0) {
+//       currentStoryIndex--;
+//     } else {
+//       widget.onPreviousUser();
+//     }
+//     _disposeVideoController(); // Dispose previous video controller
+//     _loadStory(widget.stories[currentStoryIndex]); // Load new story
+//   });
 // }
