@@ -2,20 +2,22 @@ import 'dart:convert';
 
 import 'package:emd_project/home/controllers/home_controller.dart';
 import 'package:emd_project/home/model/api_model.dart';
+import 'package:emd_project/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-import '../../utils.dart';
+import '../../utils/utils.dart';
 import '../view/widgets/response_dialog.dart';
 
 class HomeService {
   final homeController = Get.find<HomeController>();
 
-  void fetchStories() async {
+  Future<void> fetchStories() async {
     try {
-      final response = await http.get(Uri.parse('https://ixifly.in/flutter/task2'));
+      final response = await http.get(Uri.parse(AppConstants.baseUrl));
 
-      var responseBodyDecoded = StoryResponseModel.fromJson(jsonDecode(response.body));
+      var responseBodyDecoded =
+          StoryResponseModel.fromJson(jsonDecode(response.body));
       prettyPrintJson(response.body);
 
       if (responseBodyDecoded.status == true) {

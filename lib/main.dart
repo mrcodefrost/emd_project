@@ -1,5 +1,5 @@
-import 'package:emd_project/home/controllers/home_controller.dart';
 import 'package:emd_project/home/view/screens/home_screen.dart';
+import 'package:emd_project/utils/depedency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,8 +7,10 @@ import 'package:get/get.dart';
 void main() {
   runApp(const MyApp());
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  Get.put(HomeController());
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  DependencyInjection.init();
 }
 
 class MyApp extends StatelessWidget {
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'EMD',
       theme: ThemeData(

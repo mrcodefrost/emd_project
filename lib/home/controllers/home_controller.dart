@@ -7,8 +7,12 @@ class HomeController extends GetxController {
   RxList<Data> data = <Data>[].obs;
 
   @override
-  void onReady() {
+  void onReady() async {
     super.onReady();
-    HomeService().fetchStories();
+    await HomeService().fetchStories();
+  }
+
+  Future<void> onRefresh() async {
+    await HomeService().fetchStories();
   }
 }
