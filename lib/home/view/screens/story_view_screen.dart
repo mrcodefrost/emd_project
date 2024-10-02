@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -21,6 +23,8 @@ class StoryView extends StatefulWidget {
 class _StoryViewState extends State<StoryView> {
   int currentStoryIndex = 0;
   VideoPlayerController? _videoController;
+  Timer? _imageTimer;
+  bool isPaused = false;
 
   @override
   void initState() {
@@ -49,7 +53,24 @@ class _StoryViewState extends State<StoryView> {
             }
           });
         });
+    } else if (story.mediaType == 'image') {
+      _startImageTimer(); // Start timer for images
     }
+  }
+
+  // Start a timer for images to go to the next story automatically after 5 seconds
+  void _startImageTimer() {
+    _imageTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!isPaused) {
+        _goToNextStory();
+      }
+    });
+  }
+
+  // Cancel any running image timers
+  void _cancelImageTimer() {
+    _imageTimer?.cancel();
+    _imageTimer = null;
   }
 
   // Dispose video controllers when no longer needed
@@ -68,6 +89,7 @@ class _StoryViewState extends State<StoryView> {
         widget.onNextUser(); // Move to the next user's stories
       }
       _disposeVideoController(); // Dispose previous video controller
+      _cancelImageTimer();
       _loadStory(widget.stories[currentStoryIndex]); // Load new story
     });
   }
@@ -155,9 +177,6 @@ class _StoryViewState extends State<StoryView> {
 
     return GestureDetector(
       onTapDown: (details) => onTapDown(details),
-      onLongPress: () {
-        // pause
-      },
       onHorizontalDragEnd: (details) {
         // Detect horizontal swipe gestures for user story navigation
         if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
@@ -166,6 +185,22 @@ class _StoryViewState extends State<StoryView> {
             details.primaryVelocity! < 0) {
           widget.onNextUser(); // Swipe Left: Move to next user
         }
+      },
+      onLongPress: () {
+        setState(() {
+          isPaused = true; // Pause the story on long press
+          _videoController?.pause(); // Pause video if it's playing
+          _cancelImageTimer(); // Cancel image timer
+        });
+      },
+      onLongPressUp: () {
+        setState(() {
+          isPaused = false; // Resume the story when long press is released
+          _videoController?.play(); // Resume video if it's paused
+          if (currentStory.mediaType == 'image') {
+            _startImageTimer(); // Resume timer for image
+          }
+        });
       },
       child: Scaffold(
         body: Center(
@@ -207,6 +242,13 @@ class ImageStory extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5),
               child: Column(
                 children: [
+                  // Todo : uncomment below to see story ID
+                  // Text(
+                  //   currentStory.storyId.toString() ?? '',
+                  //   style: const TextStyle(
+                  //       fontSize: 25, fontWeight: FontWeight.bold),
+                  // ),
+                  // const SizedBox(height: 10),
                   Text(
                     currentStory.text ?? '',
                     style: const TextStyle(
