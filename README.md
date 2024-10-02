@@ -6,6 +6,7 @@ Instagram like stories POC
 <div style="
   display: flex;
   justify-content: space-between;
+  align-items: center;
   ">
  <img src = "https://github.com/mrcodefrost/emd_project/blob/main/repo%20resources/sr_1.gif" width="250"/>
  <img src = "https://github.com/mrcodefrost/emd_project/blob/main/repo%20resources/sr_2.gif" width="250"/>
