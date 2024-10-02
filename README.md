@@ -27,13 +27,13 @@ Instagram like stories POC
 1. Clone the repository to your local machine:
 
  ```bash
-   git clone https://github.com/mrcodefrost/kriminal_fashion_client.git
+   git clone https://github.com/mrcodefrost/emd_project.git
  ```
 
 2. Navigate to the project directory:
 
  ```bash
-   cd kriminal_fashion_client
+   cd emd_project
  ```
 
 3. Install dependencies by running this command in IDE terminal:
