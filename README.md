@@ -7,9 +7,8 @@ Instagram like stories POC
   display: flex;
   justify-content: space-between;
   ">
- <img src = "https://github.com/mrcodefrost/emd_project/blob/main/repo%20resources/sr_1.mp4" width="250"/>
- <img src = "" width="250"/>
- <img src = "" width="250"/>
+ <img src = "https://github.com/mrcodefrost/emd_project/blob/main/repo%20resources/sr_1.gif" width="250"/>
+ <img src = "https://github.com/mrcodefrost/emd_project/blob/main/repo%20resources/sr_2.gif" width="250"/>
 </div>
 
 ### Features
