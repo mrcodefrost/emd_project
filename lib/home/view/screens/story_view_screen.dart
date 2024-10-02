@@ -37,6 +37,7 @@ class _StoryViewState extends State<StoryView> {
   void _loadStory(Stories story) {
     // Dispose of any existing video controller
     _disposeVideoController();
+    _cancelImageTimer();
 
     // Check if the current story is a video and initialize the controller
     if (story.mediaType == 'video') {
@@ -196,8 +197,9 @@ class _StoryViewState extends State<StoryView> {
       onLongPressUp: () {
         setState(() {
           isPaused = false; // Resume the story when long press is released
-          _videoController?.play(); // Resume video if it's paused
-          if (currentStory.mediaType == 'image') {
+          if (currentStory.mediaType == 'video') {
+            _videoController?.play(); // Resume video if it's paused
+          } else if (currentStory.mediaType == 'image') {
             _startImageTimer(); // Resume timer for image
           }
         });
@@ -243,12 +245,12 @@ class ImageStory extends StatelessWidget {
               child: Column(
                 children: [
                   // Todo : uncomment below to see story ID
-                  // Text(
-                  //   currentStory.storyId.toString() ?? '',
-                  //   style: const TextStyle(
-                  //       fontSize: 25, fontWeight: FontWeight.bold),
-                  // ),
-                  // const SizedBox(height: 10),
+                  Text(
+                    currentStory.storyId.toString() ?? '',
+                    style: const TextStyle(
+                        fontSize: 25, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
                   Text(
                     currentStory.text ?? '',
                     style: const TextStyle(
